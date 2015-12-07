@@ -13,6 +13,7 @@ module.exports = _.extend(
 	require('./rules'), 
 	{ 
 		when: require('./when'),
+		optionally: require('./optionally'),
 		register: register 
 	}
 );

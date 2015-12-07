@@ -42,6 +42,17 @@ describe('korrekt', function () {
 			done();
 		}).catch(done);
 	});
+
+	it('should allow to specify rules for optional fields', function (done) {
+		var validator = v({ a: v.isLength(2, 'too short'), b: v.optionally(v.isLength(2, 'too short')) });
+		var obj = { a: '1', b: null };
+		validator(obj).then(screw).catch(v.ValidationError, function (error) {
+			error.fields.should.eql({
+				a: 'too short'
+			});
+			done();
+		}).catch(done);
+	});
 });
 
 function screw (done) {
