@@ -1,0 +1,28 @@
+{
+  "name": "korrekt",
+  "version": "0.0.1",
+  "description": "Validation engine which supports async validators by employing promises",
+  "main": "index.js",
+  "scripts": {
+    "test": "mocha tests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/titarenko/korrekt.git"
+  },
+  "author": "Constantin Titarenko",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/titarenko/korrekt/issues"
+  },
+  "homepage": "https://github.com/titarenko/korrekt#readme",
+  "dependencies": {
+    "bluebird": "^3.0.6",
+    "lodash": "^3.10.1",
+    "validator": "^4.4.0"
+  },
+  "devDependencies": {
+    "mocha": "^2.3.4",
+    "should": "^7.1.1"
+  }
+}
