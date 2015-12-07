@@ -1,6 +1,6 @@
 {
   "name": "korrekt",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Validation engine which supports async validators by employing promises",
   "main": "index.js",
   "directories": {
