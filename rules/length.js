@@ -1,11 +1,11 @@
 const messages = require('../messages')
 
 messages.customize('length', function (params, options) {
-	if (options.min && options.max) {
+	if (options && options.min && options.max) {
 		return `"${params.field}" length must be from ${options.min} to ${options.max}`
-	} else if (options.min && !options.max) {
+	} else if (options && options.min && !options.max) {
 		return `"${params.field}" length must be at least ${options.min}`
-	} else if (!options.min && options.max) {
+	} else if (options && !options.min && options.max) {
 		return `"${params.field}" length must be at most ${options.max}`
 	} else {
 		return `"${params.field}" must not be empty`
