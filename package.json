@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "node --use_strict --harmony_shipping ./node_modules/mocha/bin/mocha tests"
+    "test": "istanbul cover _mocha -- tests -R spec && cat ./coverage/lcov.info | coveralls.js"
   },
   "repository": {
     "type": "git",
@@ -33,6 +33,7 @@
     "bluebird": "^3.4.1"
   },
   "devDependencies": {
+    "coveralls": "^2.11.12",
     "istanbul": "^0.4.4",
     "mocha": "^3.0.1",
     "should": "^10.0.0"

@@ -2,6 +2,9 @@
 
 Asynchronous validation library
 
+[![Build Status](https://travis-ci.org/titarenko/korrekt.svg?branch=master)](https://travis-ci.org/titarenko/korrekt)
+[![Coverage Status](https://coveralls.io/repos/github/titarenko/korrekt/badge.svg?branch=master)](https://coveralls.io/github/titarenko/korrekt?branch=master)
+
 ## Installation
 
 ```bash
