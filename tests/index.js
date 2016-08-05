@@ -90,6 +90,42 @@ describe('korrekt', function () {
 			})
 			.catch(done)
 	})
+
+	it('should allow to register custom rules', function (done) {
+		v.register('same', (options, message) => function (params) {
+			if (params.value != params.subject[options.field]) {
+				return v.format({
+					rule: 'same',
+					params,
+					options,
+					message
+				})
+			}
+		})
+		v.customize('same', (params, options) => `${params.field} must match ${options.field}`)
+		const validator = v.create({
+			password: v.required(),
+			password_confirmation: v.same({ field: 'password' })
+		})
+		validator({ password: '1', password_confirmation: '2' }).then(done).catch(v.ValidationError, error => {
+			error.fields.should.eql({ password_confirmation: 'password_confirmation must match password'})
+			done()
+		}).catch(done)
+	})
+
+	it('should not allow to overwrite existing rule silently', function () {
+		v.register('aba', () => { })
+		should.throws(() => {
+			v.register('aba', () => { })
+		}, 'rule aba already exists')
+	})
+
+	it('should allow to overwrite existing rule explicitly', function () {
+		v.register('bab', () => { })
+		should.doesNotThrow(() => {
+			v.register('bab', () => { }, true)
+		})
+	})
 })
 
 function fail (done) {

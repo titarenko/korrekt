@@ -3,10 +3,10 @@ const rules = require('./rules')
 const messages = require('./messages')
 const errors = require('./errors')
 
-module.exports = Object.assign({
+module.exports = new Proxy({
 	create: validator.create,
 	register: rules.register,
 	customize: messages.customize,
-
+	format: messages.format,
 	ValidationError: errors.ValidationError,
-}, rules)
+}, { get: (target, property) => property in target ? target[property] : rules[property] })
