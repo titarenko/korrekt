@@ -1,19 +1,12 @@
-var _ = require('lodash');
+const validator = require('./validator')
+const rules = require('./rules')
+const messages = require('./messages')
+const errors = require('./errors')
 
-function register(name, builder, overwrite) {
-	if (this[name] && !overwrite) {
-		throw new Error(name + ': such validator already exists!');
-	}
-	this[name] = builder;
-}
+module.exports = Object.assign({
+	create: validator.create,
+	register: rules.register,
+	customize: messages.customize,
 
-module.exports = _.extend(
-	require('./builder'), 
-	require('./wrapped-validator'), 
-	require('./rules'), 
-	{ 
-		when: require('./when'),
-		optionally: require('./optionally'),
-		register: register 
-	}
-);
+	ValidationError: errors.ValidationError,
+}, rules)
