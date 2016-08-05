@@ -20,8 +20,8 @@ const v = require('korrekt')
 
 const validator = v.create({
 	name: v.length({ min: 3 }),
-	email: v.match(/[\w\d\.]+@[\w\d\.]+/, 'email is not valid'),
-	skype: [v.length({ min: 3 }), v.match(/[\w\d]+/)],
+	email: v.match(/[\w\.]+@[\w\.]+/, 'email is not valid'),
+	skype: [v.length({ min: 3 }), v.match(/\w+/)],
 	phone: v.when(it => !it.skype, [v.match(/\d+/), v.length({ min: 9, max: 9 })])
 })
 
@@ -42,7 +42,7 @@ v.customize('length', (params, options) => `длина поля ${params.name} �
 v.register('same', function (options, message) {
 	return function (params) {
 		if (params.value != params.subject[options.field]) {
-			return v.get({ rule: 'same', params, options, message })
+			return v.format({ rule: 'same', params, options, message })
 		}
 	}
 })
@@ -67,6 +67,24 @@ validator({ name: 'me123456789', password: '1', password_confirmation: '2' })
 Validator is being buit in a declarative way using schema and `korrekt.create` method.
 
 **Schema** is an object representing set of validation rules. Each key is field name, each value is either rule or array of rules.
+
+### List of methods
+
+#### create(schema)
+
+Creates validator function.
+
+#### register(name, rule, [overwrite])
+
+Registers custom rule. Rule parameter here is actually the rule builder, accepting options and custom message as arguments. By default `register` throws exception if rule with same name already exists, but you can specify `true` as 3rd argument to explicitly overwrite existing rule.
+
+#### customize(name, message)
+
+Customizes validation error message for given rule. Message argument can be string or function, accepting two arguments, – arguments of rule (params) as 1st argument and arguments of rule builder (options) as 2nd argument, it must return string with error description.
+
+#### format({ rule, params, options, message })
+
+Should be used from custom rule functions only to obtain formatted string with error message. Rule here is the name of rule, params – rule function argument, options – rule builder argument, message – custom error message (2nd argument of builder). See library source code (rules folder) for usage examples.
 
 ### List of rules
 
@@ -97,7 +115,6 @@ Checks that value belongs to specified array of values (enumeration). Message op
 #### when(predicate, rule)
 
 Checks that value satisfies requiremets expressed via rule, but check is done only if predicate (called with object under validation as argument) returns true.
-
 
 ## License
 
