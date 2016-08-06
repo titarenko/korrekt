@@ -11,6 +11,8 @@ const rules = {
 
 	match: require('./match'),
 	enum: require('./enum'),
+
+	email: require('./email'),
 }
 
 module.exports = rules

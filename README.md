@@ -112,6 +112,10 @@ Checks that value matches specified regex. Message optional argument is a custom
 
 Checks that value belongs to specified array of values (enumeration). Message optional argument is a custom validation error message.
 
+#### email(message)
+
+Checks that value is a valid email. Message optional argument is a custom validation error message.
+
 #### when(predicate, rule)
 
 Checks that value satisfies requiremets expressed via rule, but check is done only if predicate (called with object under validation as argument) returns true.
