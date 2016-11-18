@@ -16,8 +16,8 @@ module.exports = function builder (options, message) {
 	return function (params) {
 		const number = Number(params.value)
 		if (!Number.isInteger(number) ||
-			options && options.min && number < options.min ||
-			options && options.max && number > options.max) {
+			options && options.min != null && number < options.min ||
+			options && options.max != null && number > options.max) {
 			return messages.format({
 				rule: 'integer',
 				params,
