@@ -1,11 +1,11 @@
 const messages = require('../messages')
 
 messages.customize('number', function (params, options) {
-	if (options && options.min && options.max) {
+	if (options && options.min != null && options.max != null) {
 		return `"${params.field}" must be number between ${options.min} and ${options.max}`
-	} else if (options && options.min && !options.max) {
+	} else if (options && options.min != null && options.max == null) {
 		return `"${params.field}" must be number not less than ${options.min}`
-	} else if (options && !options.min && options.max) {
+	} else if (options && options.min == null && options.max != null) {
 		return `"${params.field}" must be number not greater than ${options.max}`
 	} else {
 		return `"${params.field}" must be number`

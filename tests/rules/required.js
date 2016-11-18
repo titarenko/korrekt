@@ -10,8 +10,8 @@ describe('korrekt.required', function () {
 		}).catch(done)
 	})
 
-	it('should not treat null as absence of value', function (done) {
+	it('should treat null as absence of value', function (done) {
 		const validator = v.create({ name: v.required() })
-		validator({ name: null }).then(() => done()).catch(done)
+		validator({ name: null }).then(() => done(new Error('false positive!'))).catch(() => done())
 	})
 })
