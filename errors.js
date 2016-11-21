@@ -4,8 +4,12 @@ module.exports = { ValidationError }
 
 function ValidationError (results) {
 	this.message = 'validation failed'
-	this.fields = { }
-	results.forEach(result => this.fields[result.field] = result.value)
+	if (Array.isArray(results)) {
+		this.fields = { }
+		results.forEach(result => this.fields[result.field] = result.value)
+	} else {
+		this.fields = results
+	}
 	Error.captureStackTrace(this, ValidationError)
 }
 
