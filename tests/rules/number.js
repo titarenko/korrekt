@@ -43,4 +43,9 @@ describe('korrekt.number', function () {
 			done()
 		}).catch(done)
 	})
+
+	it('should skip null', function (done) {
+		const validator = v.create({ it: v.number() })
+		validator({ it: null }).then(() => done()).catch(done)
+	})
 })

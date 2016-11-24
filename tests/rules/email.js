@@ -14,4 +14,9 @@ describe('korrekt.email', function () {
 			done()
 		}).catch(done)
 	})
+
+	it('should skip null', function (done) {
+		const validator = v.create({ email: v.email() })
+		validator({ email: null }).then(() => done()).catch(done)
+	})
 })

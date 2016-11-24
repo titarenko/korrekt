@@ -51,4 +51,9 @@ describe('korrekt.integer', function () {
 			done()
 		}).catch(done)
 	})
+
+	it('should skip null', function (done) {
+		const validator = v.create({ it: v.integer() })
+		validator({ it: null }).then(() => done()).catch(done)
+	})
 })

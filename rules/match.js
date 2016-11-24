@@ -4,7 +4,7 @@ messages.customize('match', params => `"${params.field}" does not match required
 
 module.exports = function builder (options, message) {
 	return function (params) {
-		if (params.value && !params.value.match(options)) {
+		if (params.value != null && !params.value.match(options)) {
 			return messages.format({
 				rule: 'match',
 				params,

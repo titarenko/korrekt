@@ -4,7 +4,7 @@ messages.customize('enum', (params, options) => `"${params.field}" must be one o
 
 module.exports = function builder (options, message) {
 	return function (params) {
-		if (!options.some(it => it == params.value)) {
+		if (params.value != null && !options.some(it => it == params.value)) {
 			return messages.format({
 				rule: 'enum',
 				params,

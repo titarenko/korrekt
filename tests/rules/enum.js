@@ -22,4 +22,9 @@ describe('korrekt.enum', function () {
 			done()
 		}).catch(done)
 	})
+
+	it('should skip null', function (done) {
+		const validator = v.create({ choice: v.enum([1, 2]) })
+		validator({ choice: null }).then(() => done()).catch(done)
+	})
 })
