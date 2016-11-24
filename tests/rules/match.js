@@ -22,4 +22,9 @@ describe('korrekt.match', function () {
 		const validator = v.create({ number: v.match(/\d+/) })
 		validator({ number: '123' }).then(() => done()).catch(done)
 	})
+
+	it('should skip null', function (done) {
+		const validator = v.create({ number: v.match(/\d+/) })
+		validator({ number: null }).then(() => done()).catch(done)
+	})
 })
