@@ -48,4 +48,9 @@ describe('korrekt.number', function () {
 		const validator = v.create({ it: v.number() })
 		validator({ it: null }).then(() => done()).catch(done)
 	})
+
+	it('should skip undefined', function (done) {
+		const validator = v.create({ it: v.number() })
+		validator({ }).then(() => done()).catch(done)
+	})
 })

@@ -14,6 +14,9 @@ messages.customize('integer', function (params, options) {
 
 module.exports = function builder (options, message) {
 	return function (params) {
+		if (params.value == null) {
+			return
+		}
 		const number = Number(params.value)
 		if (!Number.isInteger(number) ||
 			options && options.min != null && number < options.min ||
