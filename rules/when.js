@@ -1,9 +1,9 @@
-const runner = require('../runner')
+module.exports = (predicate, rule) =>
+  value =>
+    value == null ? undefined : run(predicate, rule, value)
 
-module.exports = function builder (predicate, rule) {
-	return function (params) {
-		if (predicate(params.subject, params.field)) {
-			return runner(rule, params)
-		}
-	}
+function run (predicate, rule, value) {
+  if (predicate(value)) {
+    return rule(value)
+  }
 }

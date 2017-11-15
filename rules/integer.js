@@ -1,32 +1,16 @@
-const messages = require('../messages')
+module.exports = ({ min, max } = { }) =>
+	value =>
+		value == null ? undefined : run(min, max, value)
 
-messages.customize('integer', function (params, options) {
-	if (options && options.min != null && options.max != null) {
-		return `"${params.field}" must be integer between ${options.min} and ${options.max}`
-	} else if (options && options.min != null && options.max == null) {
-		return `"${params.field}" must be integer not less than ${options.min}`
-	} else if (options && options.min == null && options.max != null) {
-		return `"${params.field}" must be integer not greater than ${options.max}`
-	} else {
-		return `"${params.field}" must be integer`
+function run (min, max, value) {
+	const number = Number(value)
+	if (!Number.isInteger(number)) {
+		return 'not an integer'
 	}
-})
-
-module.exports = function builder (options, message) {
-	return function (params) {
-		if (params.value == null) {
-			return
-		}
-		const number = Number(params.value)
-		if (!Number.isInteger(number) ||
-			options && options.min != null && number < options.min ||
-			options && options.max != null && number > options.max) {
-			return messages.format({
-				rule: 'integer',
-				params,
-				options,
-				message
-			})
-		}
+	if (min != null && number < min) {
+		return ['less than minimum', { min }]
+	}
+	if (max != null && number > max) {
+		return ['greater than maximum', { max }]
 	}
 }

@@ -2,6 +2,17 @@ const v = require('../')
 const should = require('should')
 const Promise = require('bluebird')
 
+// const v = create(object({
+//   a: [
+//     required(),
+//     array(object({
+//       b: number(),
+//       c: integer(),
+//     }), { min: 1, max: 10 }),
+//   ],
+//   b: when(x => x.password, length({ min: 10, max: 50 })),
+// }))
+
 describe('korrekt', function () {
 	it('should validate 1 field with 1 rule', function (done) {
 		const schema = {

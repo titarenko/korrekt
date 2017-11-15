@@ -120,6 +120,17 @@ Checks that value is a valid email. Message optional argument is a custom valida
 
 Checks that value satisfies requiremets expressed via rule, but check is done only if predicate (called with object under validation as argument) returns true.
 
+
+# Rule Interface
+
+Rule is an object with two properties
+- predicate: curried function with args `...builder args => ...validator args`, returns null if rule is not applicable, true if value is valid, false otherwise
+- message: curried function with args `...validator args => ...builder args`, returns validation error message
+
+Where:
+- builder args: variadic arguments received from library user
+- validator args: `value` (value of field under validation), `field` (name of field under validation) , `instance` (instance of object under test)
+
 ## License
 
 MIT

@@ -1,19 +1,21 @@
-const formatters = { }
+const reporters = { }
 
 module.exports = {
 	customize,
-	format,
+	report,
 }
 
-function customize (rule, message) {
-	formatters[rule] = build(message)
+function customize (rule, messageOrReporter) {
+	reporters[rule] = buildReporter(messageOrReporter)
 }
 
-function format ({ rule, params, options, message }) {
-	const formatter = message ? build(message) : formatters[rule]
-	return formatter(params, options)
+function report ({ rule, args, options, message }) {
+	const reporter = message ? buildReporter(message) : reporters[rule]
+	return reporter(args, options)
 }
 
-function build (message) {
-	return typeof message == 'function' ? message : () => message
+function buildReporter (messageOrReporter) {
+	return typeof messageOrReporter == 'function'
+    ? messageOrReporter
+    : () => messageOrReporter
 }
