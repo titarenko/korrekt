@@ -2,7 +2,7 @@ module.exports = schema =>
   value =>
     value == null ? undefined : run(schema, value)
 
-function run (schema, value) {
+async function run (schema, value) {
   if (typeof value !== 'object' || Array.isArray(value)) {
     return 'must be an object'
   }
@@ -12,8 +12,9 @@ function run (schema, value) {
   const errors = await Promise.all(promises)
 
   return keys.reduce((m, k, i) => {
-    if (errors[i]) {
-      return Object.assign(m || { }, { [k]: e[i] })
+    const e = errors[i]
+    if (e) {
+      return Object.assign(m || { }, { [k]: e })
     }
   }, undefined)
 }

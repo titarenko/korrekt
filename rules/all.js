@@ -1,4 +1,4 @@
-module.exports = rules =>
+module.exports = (...rules) =>
   value =>
     value == null ? undefined : run(rules, value)
 

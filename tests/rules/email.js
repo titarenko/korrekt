@@ -2,9 +2,9 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.email', function () {
-	it('should not complain about valid email', function (done) {
-		const validator = v.create({ email: v.email() })
-		validator({ email: 'bob.atkins@gmail.com' }).then(() => done()).catch(done)
+	it('should not complain about valid email', function () {
+		const validator = v.create(v.object({ email: v.email() }))
+		return validator({ email: 'bob.atkins@gmail.com' }).catch(console.log)
 	})
 
 	it('should catch wrong email', function (done) {
