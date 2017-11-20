@@ -87,35 +87,32 @@ describe('korrekt', function () {
 	})
 
 	it('should allow to register custom rules', async function () {
-		const same = options => (value, , instance) => value != instance[options.field] ? 'not same' : undefined
+		const same = field =>
+			(value, _, instance) =>
+				value != instance[field] ? 'not same' : undefined
 		v.register('same', same)
 		const validator = v.create(v.object({
 			password: v.required(),
-			password_confirmation: v.same({ field: 'password' })
+			password_confirmation: v.same('password'),
 		}))
-		validator({ password: '1', password_confirmation: '2' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ password_confirmation: 'password_confirmation must match password'})
-			done()
-		}).catch(done)
+		try {
+			validator({ password: '1', password_confirmation: '2' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof korrekt.ValidationError) {
+				e.result.should.eql({ password_confirmation: 'not same' })
+			}
+			throw e
+		}
 	})
 
 	it('should not allow to overwrite existing rule silently', function () {
-		v.register('aba', () => { })
-		should.throws(() => {
-			v.register('aba', () => { })
-		}, 'rule aba already exists')
+		v.register('aba', () => undefined)
+		should.throws(() => v.register('aba', () => undefined), 'rule aba already exists')
 	})
 
 	it('should allow to overwrite existing rule explicitly', function () {
-		v.register('bab', () => { })
-		should.doesNotThrow(() => {
-			v.register('bab', () => { }, true)
-		})
+		v.register('bab', () => undefined)
+		should.doesNotThrow(() => v.register('bab', () => undefined, true))
 	})
 })
-
-function fail (done) {
-	return function () {
-		done('seems like validator does not work, it should throw, but did not')
-	}
-}
