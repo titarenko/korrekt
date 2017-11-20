@@ -3,7 +3,7 @@ const fs = require('fs')
 const rules = fs.readdirSync(`${__dirname}/rules`)
   .filter(file => file.endsWith('.js'))
   .map(file => [file.slice(0, -3), require(`./rules/${file}`)])
-  .reduce((m, [k, v]) => Object.assign(m, { [k]: v }), { })
+  .reduce((m, [k, v]) => Object.assign(m, { [k]: wrapBuilder(v) }), { })
 
 class ValidationError extends Error {
   constructor (result) {
@@ -13,12 +13,17 @@ class ValidationError extends Error {
 }
 
 module.exports = new Proxy({
-  create: rule => async value => {
-    const result = await rule(value)
-    if (result) {
-      throw new ValidationError(result)
-    } else {
-      return value
+  create (rule) {
+    if (typeof rule != 'function') {
+      rule = rules['object'](rule)
+    }
+    return async value => {
+      const result = await rule(value)
+      if (result) {
+        throw new ValidationError(result)
+      } else {
+        return value
+      }
     }
   },
   register (name, builder, overwrite) {
@@ -29,3 +34,19 @@ module.exports = new Proxy({
   },
   ValidationError,
 }, { get: (t, p) => p in t ? t[p] : rules[p] })
+
+function wrapBuilder (builder) {
+  return function wrappedBuilder (...builderArgs) {
+    const validator = builder(...builderArgs)
+    return function wrappedValidator (...validatorArgs) {
+      const result = validator(...validatorArgs)
+      if (typeof result === 'string') {
+        return { message: result }
+      } else if (Array.isArray(result)) {
+        return { message: result[0], meta: result[1] }
+      } else {
+        return result
+      }
+    }
+  }
+}

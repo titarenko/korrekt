@@ -3,7 +3,7 @@ module.exports = options =>
 		value == null ? undefined : run(options, value)
 
 function run (options, value) {
-	if (!options.includes(value)) {
+	if (!options.some(it => it == value)) {
 		return ['not found in options', options]
 	}
 }

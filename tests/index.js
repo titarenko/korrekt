@@ -25,7 +25,7 @@ describe('korrekt', function () {
 			throw new Error('false negative')
 		} catch (e) {
 			if (e instanceof v.ValidationError) {
-				e.result.should.eql({ login: { message: 'is too short', meta: { min: 3 } } })
+				e.result.should.eql({ login: { message: 'must be longer', meta: { min: 3 } } })
 			} else {
 				throw e
 			}
@@ -34,14 +34,14 @@ describe('korrekt', function () {
 
 	it('should validate 1 field with 1 conditional rule when predicate returns true', async function () {
 		const validator = v.create(v.object({
-			login: v.when(it => it.password, v.required('login is required along with password'))
+			login: v.when(it => it.password, v.required())
 		}))
 		try {
 			await validator({ password: '12' })
 			throw new Error('false negative')
 		} catch (e) {
 			if (e instanceof v.ValidationError) {
-				e.result.should.eql({ login: 'login is required along with password' })
+				e.result.should.eql({ login: { message: 'required' } })
 			} else {
 				throw e
 			}
@@ -67,7 +67,7 @@ describe('korrekt', function () {
 			throw new Error('false negative')
 		} catch (e) {
 			if (e instanceof v.ValidationError) {
-				e.result.should.eql({ login: 'login is too short' })
+				e.result.should.eql({ login: { message: 'must be longer', meta: { min: 3 } } })
 			} else {
 				throw e
 			}
@@ -96,13 +96,14 @@ describe('korrekt', function () {
 			password_confirmation: v.same('password'),
 		}))
 		try {
-			validator({ password: '1', password_confirmation: '2' })
+			await validator({ password: '1', password_confirmation: '2' })
 			throw new Error('false negative')
 		} catch (e) {
-			if (e instanceof korrekt.ValidationError) {
+			if (e instanceof v.ValidationError) {
 				e.result.should.eql({ password_confirmation: 'not same' })
+			} else {
+				throw e
 			}
-			throw e
 		}
 	})
 

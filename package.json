@@ -7,7 +7,7 @@
     "test": "tests"
   },
   "scripts": {
-    "test": "istanbul cover _mocha -- tests --recursive -R spec && cat ./coverage/lcov.info | coveralls"
+    "test": "istanbul cover _mocha -- tests --bail --recursive -R spec && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
