@@ -2,55 +2,69 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.number', function () {
-	it('should check that value is number', function (done) {
+	it('should check that value is number', async function () {
 		const validator = v.create({ height: v.number() })
-		validator({ height: 'Bob' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ height: '"height" must be number' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ height: 'Bob' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ height: { message: 'must be a number' } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is number not less than min', function (done) {
+	it('should check that value is number not less than min', async function () {
 		const validator = v.create({ height: v.number({ min: 10 }) })
-		validator({ height: '9.9' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ height: '"height" must be number not less than 10' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ height: '9.9' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ height: { message: 'must be larger', meta: { min: 10 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is number not greater than max', function (done) {
+	it('should check that value is number not greater than max', async function () {
 		const validator = v.create({ height: v.number({ max: 10 }) })
-		validator({ height: 10.2 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ height: '"height" must be number not greater than 10' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ height: 10.2 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ height: { message: 'must be smaller', meta: { max: 10 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is number not less than min and not greater than max', function (done) {
+	it('should check that value is number not less than min and not greater than max', async function () {
 		const validator = v.create({ height: v.number({ min: 2, max: 10 }) })
-		validator({ height: 10.1 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ height: '"height" must be number between 2 and 10' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ height: 10.1 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ height: { message: 'must be smaller', meta: { max: 10 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should use custom message', function (done) {
-		const validator = v.create({ 
-			height: v.number({ min: 2, max: 10 }, (params, options) => `${params.field}: ${params.value} is not between ${options.min} and ${options.max}`)
-		})
-		validator({ height: 1.59 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ height: 'height: 1.59 is not between 2 and 10' })
-			done()
-		}).catch(done)
-	})
-
-	it('should skip null', function (done) {
+	it('should skip null', async function () {
 		const validator = v.create({ it: v.number() })
-		validator({ it: null }).then(() => done()).catch(done)
+		await validator({ it: null })
 	})
 
-	it('should skip undefined', function (done) {
+	it('should skip undefined', async function () {
 		const validator = v.create({ it: v.number() })
-		validator({ }).then(() => done()).catch(done)
+		await validator({ })
 	})
 })

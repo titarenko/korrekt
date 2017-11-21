@@ -38,8 +38,8 @@ module.exports = new Proxy({
 function wrapBuilder (builder) {
   return function wrappedBuilder (...builderArgs) {
     const validator = builder(...builderArgs)
-    return function wrappedValidator (...validatorArgs) {
-      const result = validator(...validatorArgs)
+    return async function wrappedValidator (...validatorArgs) {
+      const result = await validator(...validatorArgs)
       if (typeof result === 'string') {
         return { message: result }
       } else if (Array.isArray(result)) {

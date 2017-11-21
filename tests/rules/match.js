@@ -2,29 +2,27 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.match', function () {
-	it('should reject value if it does not match pattern', function (done) {
+	it('should reject value if it does not match pattern', async function () {
 		const validator = v.create({ name: v.match(/^\D+$/) })
-		validator({ name: 'bob1' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: '"name" does not match required pattern'})
-			done()
-		}).catch(done)
+		try {
+			await validator({ name: 'bob1' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must match', meta: { regex: /^\D+$/ } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should use custom message', function (done) {
-		const validator = v.create({ email: v.match(/\w+@\w+\.[\w\.]+/, params => `${params.value} is not valid email`) })
-		validator({ email: 'bob@com' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ email: 'bob@com is not valid email'})
-			done()
-		}).catch(done)
-	})
-
-	it('should accept valid value matching specified pattern', function (done) {
+	it('should accept valid value matching specified pattern', async function () {
 		const validator = v.create({ number: v.match(/\d+/) })
-		validator({ number: '123' }).then(() => done()).catch(done)
+		await validator({ number: '123' })
 	})
 
-	it('should skip null', function (done) {
+	it('should skip null', async function () {
 		const validator = v.create({ number: v.match(/\d+/) })
-		validator({ number: null }).then(() => done()).catch(done)
+		await validator({ number: null })
 	})
 })

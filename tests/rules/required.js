@@ -2,16 +2,31 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.required', function () {
-	it('should not allow to omit property', function (done) {
+	it('should not allow to omit property', async function () {
 		const validator = v.create({ name: v.required() })
-		validator({ age: 20 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: '"name" is required' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ age: 20 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'required' } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should treat null as absence of value', function (done) {
+	it('should treat null as absence of value', async function () {
 		const validator = v.create({ name: v.required() })
-		validator({ name: null }).then(() => done(new Error('false positive!'))).catch(() => done())
+		try {
+			await validator({ name: null })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'required' } })
+			} else {
+				throw e
+			}
+		}
 	})
 })

@@ -2,18 +2,18 @@ module.exports = (schema, { min, max } = { }) =>
   value =>
     value == null ? undefined : run(schema, min, max, value)
 
-async function run (error, schema, min, max, value) {
+async function run (schema, min, max, value) {
   if (!Array.isArray(value)) {
-    return 'not an array'
+    return 'must be an array'
   }
   if (min != null && value.length < min) {
-    return ['length is less than minimum', { min }]
+    return ['must be longer', { min }]
   }
   if (max != null && value.length > max) {
-    return ['length is greater than maximum', { max }]
+    return ['must be shorter', { max }]
   }
   const errors = await Promise.all(value.map(schema))
   if (errors.some(Boolean)) {
-    return ['invalid items', errors]
+    return ['must have valid items', errors]
   }
 }

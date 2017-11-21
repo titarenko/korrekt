@@ -3,6 +3,9 @@ module.exports = ({ min, max } = { }) =>
 		value == null ? undefined : run(min, max, value)
 
 function run (min, max, value) {
+	if (!value) {
+		return 'must not be empty'
+	}
 	if (value.length == null) {
 		return 'does not have length'
 	}

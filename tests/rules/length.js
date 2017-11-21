@@ -2,52 +2,87 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.length', function () {
-	it('should check that value has length', function (done) {
+	it('should check that value has length', async function () {
 		const validator = v.create({ name: v.length() })
-		validator({ name: '' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: '"name" must not be empty' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ name: '' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must not be empty' } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value has length not less than min', function (done) {
+	it('should fail if value does not have property "length"', async function () {
+		const validator = v.create({ name: v.length() })
+		try {
+			await validator({ name: 123 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'does not have length' } })
+			} else {
+				throw e
+			}
+		}
+	})
+
+	it('should check that value has length not less than min', async function () {
 		const validator = v.create({ name: v.length({ min: 3 }) })
-		validator({ name: 'ab' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: '"name" length must be at least 3' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ name: 'ab' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must be longer', meta: { min: 3 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value has length not greater than max', function (done) {
+	it('should check that value has length not greater than max', async function () {
 		const validator = v.create({ name: v.length({ max: 4 }) })
-		validator({ name: 'abcde' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: '"name" length must be at most 4' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ name: 'abcde' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must be shorter', meta: { max: 4 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value has length not less than min and not greater than max', function (done) {
+	it('should check that value has length not less than min and not greater than max', async function () {
 		const validator = v.create({ name: v.length({ min: 2, max: 4 }) })
-		validator({ name: 'a' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: '"name" length must be from 2 to 4' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ name: 'a' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must be longer', meta: { min: 2 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should use custom message', function (done) {
-		const validator = v.create({ 
-			name: v.length({ min: 2, max: 3 }, (params, options) => `${params.field}'s length is not between ${options.min} and ${options.max}`)
-		})
-		validator({ name: '1' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ name: 'name\'s length is not between 2 and 3' })
-			done()
-		}).catch(done)
-	})
-
-	it('should pass valid object', function (done) {
+	it('should pass valid object', async function () {
 		const validator = v.create({ 
 			name: v.length({ min: 2, max: 3 })
 		})
-		validator({ name: 'aba' }).then(() => done()).catch(done)
+		await validator({ name: 'aba' })
+	})
+
+	it('should pass null or undefined value', async function () {
+		const validator = v.create({ 
+			name: v.length({ min: 2, max: 3 })
+		})
+		await validator({ name: null })
 	})
 })
