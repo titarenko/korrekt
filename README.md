@@ -89,53 +89,20 @@ Registers custom rule. Rule parameter here is actually the rule builder, accepti
 
 ### List of rules
 
-#### required()
-
-Requires value to be present (not undefined or null).
-
-#### length({ min, max })
-
-Verifies value has length and it is between specified boundaries (if any).
-
-#### integer({ min, max })
-
-Verifies value is integer and it is between specified boundaries (if any).
-
-#### number({ min, max })
-
-Verifies value is number (integer or real) and it is between specified boundaries (if any).
-
-#### match(regex)
-
-Verifies value matches regex.
-
-#### enum(options)
-
-Verifies value is equal to one of specified options.
-
-#### email()
-
-Verifies value is an email (has @ inside).
-
-#### when(predicate: instance => boolean, rule)
-
-Verifies value is valid according to rule, but verification is done only if predicate returns true.
-
-#### all(rules)
-
-Verifies value is valid according to each rule from rules array.
-
-#### any(rules)
-
-Verifies value is valid according to at least one rule from rules array.
-
-#### array(rule, { min, max })
-
-Verifies value is an array and each item of it is valid according to rule. Also checks array length if at least one boundary is specified.
-
-#### object({ name: rule })
-
-Verifies value is an object and checks whether its fields are valid according to rules.
+Rule | Description
+--- | ---
+required() | Requires value to be present (not undefined or null).
+length({ min, max }) | Verifies value has length and it is between specified boundaries (if any).
+integer({ min, max }) | Verifies value is integer and it is between specified boundaries (if any).
+number({ min, max }) | Verifies value is number (integer or real) and it is between specified boundaries (if any).
+match(regex) | Verifies value matches regex.
+enum(options) | Verifies value is equal to one of specified options.
+email() | Verifies value is an email (has @ inside).
+when(predicate: instance => boolean, rule) | Verifies value is valid according to rule, but verification is done only if predicate returns true.
+all(rules) | Verifies value is valid according to each rule from rules array.
+any(rules) | Verifies value is valid according to at least one rule from rules array.
+array(rule, { min, max }) | Verifies value is an array and each item of it is valid according to rule. Also checks array length if at least one boundary is specified.
+object({ name: rule }) | Verifies value is an object and checks whether its fields are valid according to rules.
 
 ## License
 
