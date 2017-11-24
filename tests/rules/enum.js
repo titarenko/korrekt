@@ -2,29 +2,27 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.enum', function () {
-	it('should check value is one from specified enumeration', function (done) {
+	it('should check value is one from specified enumeration', async function () {
 		const validator = v.create({ status: v.enum(['pending', 'done']) })
-		validator({ status: 'bad' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ status: '"status" must be one of "pending", "done"' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ status: 'bad' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ status: { message: 'not found in options', meta: ['pending', 'done'] } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should allow value, even if it does not pass strict comparison with allowed ones', function (done) {
+	it('should allow value, even if it does not pass strict comparison with allowed ones', async function () {
 		const validator = v.create({ choice: v.enum([1, 2]) })
-		validator({ choice: '2' }).then(() => done()).catch(done)
+		await validator({ choice: '2' })
 	})
 
-	it('should use custom message', function (done) {
-		const validator = v.create({ choice: v.enum([1, 2], params => `${params.value} is bad`) })
-		validator({ choice: '3' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ choice: '3 is bad' })
-			done()
-		}).catch(done)
-	})
-
-	it('should skip null', function (done) {
+	it('should skip null', async function () {
 		const validator = v.create({ choice: v.enum([1, 2]) })
-		validator({ choice: null }).then(() => done()).catch(done)
+		await validator({ choice: null })
 	})
 })

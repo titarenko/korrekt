@@ -1,13 +1,13 @@
 {
   "name": "korrekt",
-  "version": "1.2.3",
+  "version": "2.0.0",
   "description": "Async validation",
   "main": "index.js",
   "directories": {
     "test": "tests"
   },
   "scripts": {
-    "test": "istanbul cover _mocha -- tests --recursive -R spec && cat ./coverage/lcov.info | coveralls"
+    "test": "istanbul cover _mocha -- tests --bail --recursive -R spec && cat ./coverage/lcov.info | coveralls"
   },
   "repository": {
     "type": "git",
@@ -26,16 +26,13 @@
   },
   "homepage": "https://github.com/titarenko/korrekt#readme",
   "engines": {
-    "node": ">= 6.3.1"
-  },
-  "engineStrict": true,
-  "dependencies": {
-    "bluebird": "^3.4.1"
+    "node": ">= 8.9.1"
   },
   "devDependencies": {
-    "coveralls": "^2.11.12",
-    "istanbul": "^0.4.4",
-    "mocha": "^3.0.1",
-    "should": "^10.0.0"
+    "coveralls": "^3.0.0",
+    "istanbul": "^1.1.0-alpha.1",
+    "longjohn": "^0.2.12",
+    "mocha": "^4.0.1",
+    "should": "^13.1.3"
   }
 }

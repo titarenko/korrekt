@@ -1,16 +1,9 @@
-const messages = require('../messages')
+module.exports = options =>
+	value =>
+		value == null ? undefined : run(options, value)
 
-messages.customize('enum', (params, options) => `"${params.field}" must be one of ${options.map(it => `"${it}"`).join(', ')}`)
-
-module.exports = function builder (options, message) {
-	return function (params) {
-		if (params.value != null && !options.some(it => it == params.value)) {
-			return messages.format({
-				rule: 'enum',
-				params,
-				options,
-				message
-			})
-		}
+function run (options, value) {
+	if (!options.some(it => it == value)) {
+		return ['not found in options', options]
 	}
 }

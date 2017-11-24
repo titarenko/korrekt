@@ -1,16 +1,9 @@
-const messages = require('../messages')
+module.exports = regex =>
+	value =>
+		value == null ? undefined : run(regex, value)
 
-messages.customize('match', params => `"${params.field}" does not match required pattern`)
-
-module.exports = function builder (options, message) {
-	return function (params) {
-		if (params.value != null && !params.value.match(options)) {
-			return messages.format({
-				rule: 'match',
-				params,
-				options,
-				message
-			})
-		}
+function run (regex, value) {
+	if (!value.match(regex)) {
+		return ['must match', { regex }]
 	}
 }

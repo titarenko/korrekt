@@ -1,9 +1,20 @@
 # korrekt
 
-Asynchronous validation library
+Asynchronous validation library.
 
 [![Build Status](https://travis-ci.org/titarenko/korrekt.svg?branch=master)](https://travis-ci.org/titarenko/korrekt)
 [![Coverage Status](https://coveralls.io/repos/github/titarenko/korrekt/badge.svg?branch=master)](https://coveralls.io/github/titarenko/korrekt?branch=master)
+
+## TOC
+
+* [Installation](#installation)
+* [Usage](#usage)
+	* [Out of the box](#out-of-the-box)
+	* [Custom rules](#custom-rules)
+* [Reference](#reference)
+	* [List of methods](#list-of-methods)
+	* [List of rules](#list-of-rules)
+* [License](#license)
 
 ## Installation
 
@@ -13,36 +24,40 @@ npm i korrekt --save
 
 ## Usage
 
-### Basic
+### Out of the box
 
 ```js
 const v = require('korrekt')
 
 const validator = v.create({
 	name: v.length({ min: 3 }),
-	email: v.match(/[\w\.]+@[\w\.]+/, 'email is not valid'),
-	skype: [v.length({ min: 3 }), v.match(/\w+/)],
-	phone: v.when(it => !it.skype, [v.match(/\d+/), v.length({ min: 9, max: 9 })])
+	email: v.email(),
+	skype: v.all([
+		v.length({ min: 3 }),
+		v.match(/\w+/),
+	]),
+	phone: v.when(it => !it.skype, v.all([
+		v.match(/\d+/),
+		v.length({ min: 9, max: 9 }),
+	]))
 })
 
 validator({ name: 'me', email: 'me;myself@world.com', skype: 'abba' })
 	.then(validatedObject => console.log(validatedObject))
-	.catch(v.ValidationError, error => console.error(error.fields))
+	.catch(v.ValidationError, error => console.error(error.result))
 
-// { name: '"name" length must be at least 3', email: 'email is not valid' }
+// { name: { message: 'must be longer', meta: { min: 3 } }, email: { message: 'must be an email' } }
 ```
 
-### Advanced (localization, custom rules)
+### Custom rules
 
 ```js
 const v = require('korrekt')
 
-v.customize('length', (params, options) => `длина поля ${params.name} должна быть от ${options.min} до ${options.max}`)
-
-v.register('same', function (options, message) {
-	return function (params) {
-		if (params.value != params.subject[options.field]) {
-			return v.format({ rule: 'same', params, options, message })
+v.register('same', function (field) {
+	return function (value, _, instance) {
+		if (instance[field] != value) {
+			return `must be same as ${field}`
 		}
 	}
 })
@@ -50,27 +65,21 @@ v.register('same', function (options, message) {
 const validator = v.create({
 	name: v.length({ min: 3, max: 10 }),
 	password: v.length({ min: 3, max: 40 }),
-	password_confirmation: v.same({ field: 'password' }, 'confirmation must match password')
+	password_confirmation: v.same('password'),
 })
 
 validator({ name: 'me123456789', password: '1', password_confirmation: '2' })
 	.then(validatedObject => console.log(validatedObject))
 	.catch(v.ValidationError, error => console.error(error.fields))
 
-// { name: 'длина поля name должна быть от 3 до 10', password: 'длина поля password должна быть от 3 до 40', password_confirmation: 'confirmation must match password' }
+// { name: { message: 'must be shorter', meta: { max: 10 } }, password: { message: 'must be longer', meta: { min: 3 } }, password_confirmation: { message: 'must be same as  password' } }
 ```
 
 ## Reference
 
-**Validator** is a function accepting object as one argument and returning promise either fulfilled with accepted object, or rejected with object representing validation errors.
-
-Validator is being buit in a declarative way using schema and `korrekt.create` method.
-
-**Schema** is an object representing set of validation rules. Each key is field name, each value is either rule or array of rules.
-
 ### List of methods
 
-#### create(schema)
+#### create(rule)
 
 Creates validator function.
 
@@ -78,47 +87,22 @@ Creates validator function.
 
 Registers custom rule. Rule parameter here is actually the rule builder, accepting options and custom message as arguments. By default `register` throws exception if rule with same name already exists, but you can specify `true` as 3rd argument to explicitly overwrite existing rule.
 
-#### customize(name, message)
-
-Customizes validation error message for given rule. Message argument can be string or function, accepting two arguments, – arguments of rule (params) as 1st argument and arguments of rule builder (options) as 2nd argument, it must return string with error description.
-
-#### format({ rule, params, options, message })
-
-Should be used from custom rule functions only to obtain formatted string with error message. Rule here is the name of rule, params – rule function argument, options – rule builder argument, message – custom error message (2nd argument of builder). See library source code (rules folder) for usage examples.
-
 ### List of rules
 
-#### required(message)
-
-Requires object to have field (but does not require it to be not null). Message optional argument is a custom validation error message.
-
-#### length({ min, max }, message)
-
-Checks length. Min, max and message are optional. If no min and max values are specified, then checks that value is not falsey (for example, "" is falsey value). If min or max are omitted, then lower or upper bound (respectively) is not checked. Message optional argument is a custom validation error message.
-
-#### integer({ min, max }, message)
-
-Checks that value is integer. If max and/or min is specified, then it also checks that value falls within specified boundaries. You can specify both or just one boundary (min or max) to check for. Message optional argument is a custom validation error message.
-
-#### number({ min, max }, message)
-
-Same as `integer`, but allows real (float) values. Message optional argument is a custom validation error message.
-
-#### match(regex, message)
-
-Checks that value matches specified regex. Message optional argument is a custom validation error message.
-
-#### enum(array, message)
-
-Checks that value belongs to specified array of values (enumeration). Message optional argument is a custom validation error message.
-
-#### email(message)
-
-Checks that value is a valid email. Message optional argument is a custom validation error message.
-
-#### when(predicate, rule)
-
-Checks that value satisfies requiremets expressed via rule, but check is done only if predicate (called with object under validation as argument) returns true.
+Rule | Description
+--- | ---
+required() | Requires value to be present (not undefined or null).
+length({ min, max }) | Verifies value has length and it is between specified boundaries (if any).
+integer({ min, max }) | Verifies value is integer and it is between specified boundaries (if any).
+number({ min, max }) | Verifies value is number (integer or real) and it is between specified boundaries (if any).
+match(regex) | Verifies value matches regex.
+enum(options) | Verifies value is equal to one of specified options.
+email() | Verifies value is an email (has @ inside).
+when(predicate: instance => boolean, rule) | Verifies value is valid according to rule, but verification is done only if predicate returns true.
+all(rules) | Verifies value is valid according to each rule from rules array.
+any(rules) | Verifies value is valid according to at least one rule from rules array.
+array(rule, { min, max }) | Verifies value is an array and each item of it is valid according to rule. Also checks array length if at least one boundary is specified.
+object({ name: rule }) | Verifies value is an object and checks whether its fields are valid according to rules.
 
 ## License
 

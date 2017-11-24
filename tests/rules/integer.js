@@ -2,63 +2,83 @@ const v = require('../..')
 const should = require('should')
 
 describe('korrekt.integer', function () {
-	it('should check that value is integer', function (done) {
+	it('should check that value is integer', async function () {
 		const validator = v.create({ age: v.integer() })
-		validator({ age: 'Bob' }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ age: '"age" must be integer' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ age: 'Bob' })
+			throw new Error('false negative')			
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ age: { message: 'not an integer' } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is integer, even if it is number', function (done) {
+	it('should check that value is integer, even if it is number', async function () {
 		const validator = v.create({ age: v.integer() })
-		validator({ age: 12.2 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ age: '"age" must be integer' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ age: 12.2 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ age: { message: 'not an integer' } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is integer not less than min', function (done) {
+	it('should check that value is integer not less than min', async function () {
 		const validator = v.create({ age: v.integer({ min: 10 }) })
-		validator({ age: 9 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ age: '"age" must be integer not less than 10' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ age: 9 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ age: { message: 'less than minimum', meta: { min: 10 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is integer not greater than max', function (done) {
+	it('should check that value is integer not greater than max', async function () {
 		const validator = v.create({ age: v.integer({ max: 10 }) })
-		validator({ age: 11 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ age: '"age" must be integer not greater than 10' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ age: 11 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ age: { message: 'greater than maximum', meta: { max: 10 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should check that value is integer not less than min and not greater than max', function (done) {
+	it('should check that value is integer not less than min and not greater than max', async function () {
 		const validator = v.create({ age: v.integer({ min: 2, max: 10 }) })
-		validator({ age: 1 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ age: '"age" must be integer between 2 and 10' })
-			done()
-		}).catch(done)
+		try {
+			await validator({ age: 1 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ age: { message: 'less than minimum', meta: { min: 2 } } })
+			} else {
+				throw e
+			}
+		}
 	})
 
-	it('should use custom message', function (done) {
-		const validator = v.create({ 
-			age: v.integer({ min: 2, max: 10 }, (params, options) => `are you crazy to specify ${params.value} for ${params.field} (while you should fit ${options.min} – ${options.max})?`)
-		})
-		validator({ age: 1 }).then(done).catch(v.ValidationError, error => {
-			error.fields.should.eql({ age: 'are you crazy to specify 1 for age (while you should fit 2 – 10)?' })
-			done()
-		}).catch(done)
-	})
-
-	it('should skip null', function (done) {
+	it('should skip null', async function () {
 		const validator = v.create({ it: v.integer() })
-		validator({ it: null }).then(() => done()).catch(done)
+		await validator({ it: null })
 	})
 
-	it('should skip undefined', function (done) {
+	it('should skip undefined', async function () {
 		const validator = v.create({ it: v.integer() })
-		validator({ }).then(() => done()).catch(done)
+		await validator({ })
 	})
 })
