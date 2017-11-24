@@ -77,6 +77,8 @@ validator({ name: 'me123456789', password: '1', password_confirmation: '2' })
 
 ## Reference
 
+### List of methods
+
 #### create(rule)
 
 Creates validator function.
