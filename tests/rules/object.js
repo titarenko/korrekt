@@ -20,4 +20,21 @@ describe('korrekt.object', function () {
     const validator = v.create({ person: v.object({ name: v.required() }) })
     await validator({ person: null })
   })
+
+  it('should return error if last field does not have error', async function () {
+    const validator = v.create({
+      password: v.length({ min: 10 }),
+      login: v.length({ min: 1 }),
+    })
+    try {
+      await validator({ password: 'boney m', login: 'abba' })
+      throw new Error('false negative')
+    } catch (e) {
+      if (e instanceof v.ValidationError) {
+        e.result.should.eql({ password: { message: 'must be longer', meta: { min: 10 } } })
+      } else {
+        throw e
+      }
+    }
+  })
 })

@@ -13,8 +13,8 @@ async function run (schema, value) {
 
   return keys.reduce((m, k, i) => {
     const e = errors[i]
-    if (e) {
-      return Object.assign(m || { }, { [k]: e })
-    }
+    return e
+      ? Object.assign(m || { }, { [k]: e })
+      : m
   }, undefined)
 }
