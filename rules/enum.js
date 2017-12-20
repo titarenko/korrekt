@@ -1,4 +1,4 @@
-module.exports = options =>
+module.exports = (...options) =>
 	value =>
 		value == null ? undefined : run(options, value)
 
