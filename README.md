@@ -32,14 +32,14 @@ const v = require('korrekt')
 const validator = v.create({
 	name: v.length({ min: 3 }),
 	email: v.email(),
-	skype: v.all([
+	skype: v.all(
 		v.length({ min: 3 }),
 		v.match(/\w+/),
-	]),
-	phone: v.when(it => !it.skype, v.all([
+	),
+	phone: v.when(it => !it.skype, v.all(
 		v.match(/\d+/),
 		v.length({ min: 9, max: 9 }),
-	]))
+	))
 })
 
 validator({ name: 'me', email: 'me;myself@world.com', skype: 'abba' })
@@ -99,8 +99,8 @@ match(regex) | Verifies value matches regex.
 enum(options) | Verifies value is equal to one of specified options.
 email() | Verifies value is an email (has @ inside).
 when(predicate: instance => boolean, rule) | Verifies value is valid according to rule, but verification is done only if predicate returns true.
-all(rules) | Verifies value is valid according to each rule from rules array.
-any(rules) | Verifies value is valid according to at least one rule from rules array.
+all(rule1, rule2, ...) | Verifies value is valid according to each rule from rules array.
+any(rule1, rile2, ...) | Verifies value is valid according to at least one rule from rules array.
 array(rule, { min, max }) | Verifies value is an array and each item of it is valid according to rule. Also checks array length if at least one boundary is specified.
 object({ name: rule }) | Verifies value is an object and checks whether its fields are valid according to rules.
 
