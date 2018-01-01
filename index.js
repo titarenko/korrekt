@@ -10,6 +10,9 @@ class ValidationError extends Error {
     super('Validation failed.')
     this.result = result
   }
+  toJSON () {
+    return JSON.stringify(this.result)
+  }
 }
 
 module.exports = new Proxy({
