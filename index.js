@@ -11,7 +11,7 @@ class ValidationError extends Error {
     this.result = result
   }
   toJSON () {
-    return JSON.stringify(this.result)
+    return this.result
   }
 }
 
