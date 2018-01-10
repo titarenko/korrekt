@@ -1,10 +1,13 @@
-module.exports = (schema, { min, max } = { }) =>
+module.exports = (schema, { min, max, exactly } = { }) =>
   value =>
-    value == null ? undefined : run(schema, min, max, value)
+    value == null ? undefined : run(schema, min, max, exactly, value)
 
-async function run (schema, min, max, value) {
+async function run (schema, min, max, exactly, value) {
   if (!Array.isArray(value)) {
     return 'must be an array'
+  }
+  if (exactly != null && value.length !== exactly) {
+    return ['must have exact length', { length: exactly }]
   }
   if (min != null && value.length < min) {
     return ['must be longer', { min }]

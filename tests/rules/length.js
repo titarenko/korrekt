@@ -72,6 +72,20 @@ describe('korrekt.length', function () {
 		}
 	})
 
+	it('should check that value has exact length', async function () {
+		const validator = v.create({ name: v.length({ exactly: 4 }) })
+		try {
+			await validator({ name: 'a' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must have exact length', meta: { length: 4 } } })
+			} else {
+				throw e
+			}
+		}
+	})
+
 	it('should pass valid object', async function () {
 		const validator = v.create({ 
 			name: v.length({ min: 2, max: 3 })

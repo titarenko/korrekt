@@ -72,4 +72,18 @@ describe('korrekt.array', function () {
       }
     }
   })
+
+  it('should fail if array does not have exact length', async function () {
+    const validator = v.create({ x: v.array(v.number(), { exactly: 2 }) })
+    try {
+      await validator({ x: [123, 1, 3] })
+      throw new Error('false negative')
+    } catch (e) {
+      if (e instanceof v.ValidationError) {
+        e.result.should.eql({ x: { message: 'must have exact length', meta: { length: 2 } } })
+      } else {
+        throw e
+      }
+    }
+  })
 })
