@@ -29,4 +29,18 @@ describe('korrekt.required', function () {
 			}
 		}
 	})
+
+	it('should support nested rules', async function () {
+		const validator = v.create({ name: v.required(v.length({ min: 3 })) })
+		try {
+			await validator({ name: 'ab' })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ name: { message: 'must be longer', meta: { min: 3 } } })
+			} else {
+				throw e
+			}
+		}
+	})
 })
