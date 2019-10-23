@@ -1,6 +1,6 @@
 {
   "name": "korrekt",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "Async validation",
   "main": "index.js",
   "directories": {
