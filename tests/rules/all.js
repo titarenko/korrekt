@@ -25,4 +25,17 @@ describe('korrekt.all', function () {
     const validator = v.create({ name: v.all(v.integer(), v.length({ min: 1 })) })
     await validator({ })
   })
+
+  it('should pass key and instance to each rule', async function () {
+    let callArgs = null
+    const customRule = (...args) => { callArgs = args }
+    const instance = { name: 'bob' }
+    const validator = v.create({ name: v.all(customRule) })
+    await validator(instance)
+    callArgs.should.eql([
+      'bob',
+      'name',
+      instance,
+    ])
+  })
 })

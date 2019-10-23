@@ -1,10 +1,10 @@
 module.exports = (...rules) =>
-  value =>
-    value == null ? undefined : run(rules, value)
+  (value, key, instance) =>
+    value == null ? undefined : run(rules, value, key, instance)
 
-async function run (rules, value) {
+async function run (rules, value, key, instance) {
   for (let r of rules) {
-    const error = await r(value)
+    const error = await r(value, key, instance)
     if (error) {
       return error
     }
