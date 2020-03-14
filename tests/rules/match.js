@@ -25,4 +25,18 @@ describe('korrekt.match', function () {
 		const validator = v.create({ number: v.match(/\d+/) })
 		await validator({ number: null })
 	})
+
+	it('should not crash on non-string', async function () {
+		const validator = v.create({ number: v.match(/\d+/) })
+		try {
+			await validator({ number: 1 })
+			throw new Error('false negative')
+		} catch (e) {
+			if (e instanceof v.ValidationError) {
+				e.result.should.eql({ number: { message: 'must match', meta: { regex: /\d+/ } } })
+			} else {
+				throw e
+			}
+		}
+	})
 })
